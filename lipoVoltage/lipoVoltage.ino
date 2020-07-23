@@ -1,3 +1,4 @@
+#include <ArrbotMonitor.h>
 #include <SimpleKalmanFilter.h>
 #include <FrSkySportSensorFlvss.h>
 #include <FrSkySportTelemetry.h>
@@ -7,26 +8,29 @@
 #define NSTEPS 1023
 SimpleKalmanFilter voltageFilter(3.7, 2, .5);
 const int voltagePin = A0;
+const int buttonPin = A5;   // because we can solder a button to GND and A5
 
-
+// TODO: add a sensor message to give battery info.
 FrSkySportSensorFlvss flvss;
 FrSkySportTelemetry telemetry;
 
 void setup() {
+  //Serial.begin(115200);
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
   telemetry.begin(SPORT_PIN, &flvss);  
 }
 
 int ledState;
 uint32_t nextFlash;
-
-#define HAS_4_CELLS 1
+uint32_t lastReadingTime;
 
 void loop() {
   float rawVoltage = analogRead(voltagePin)*(MAX_VOLTAGE/NSTEPS);
   float voltage = voltageFilter.updateEstimate(rawVoltage);
-  if (HAS_4_CELLS)
-    flvss.setData(voltage, voltage, voltage, voltage);
+  //MONITOR(rawVoltage); MONITOR(voltage); MONITOR_ENDL();
+  flvss.setData(rawVoltage);
+  //if (HAS_4_CELLS) flvss.setData(voltage, voltage, voltage, voltage);
   telemetry.send();
   uint32_t now = millis();
   if (now > nextFlash) {
