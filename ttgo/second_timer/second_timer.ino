@@ -26,15 +26,18 @@ void setup() {
   tft.setTextColor(TFT_WHITE,TFT_BLACK);
   tft.setTextSize(2); 
 }
- 
+
+int secondix;
 void loop() {
   if (timerCount) {
     portENTER_CRITICAL(&timerMux);
     timerCount--;
     portEXIT_CRITICAL(&timerMux);
     nseconds++;
+    secondix = (secondix + 1) % 60;
 
     tft.setCursor(0, 0, 2);
-    tft.print(nseconds);
+    tft.println(secondix);
+    tft.println(nseconds);
   }
 }

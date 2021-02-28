@@ -14,6 +14,8 @@ volatile unsigned long clicks = 0;
 
 unsigned long oldclicks = 0;
 volatile unsigned long oldmicros = 0;
+unsigned long cpm;
+unsigned long minuteclicks = 0;
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -36,15 +38,18 @@ void setup() {
 
 void loop() {
   if (clicks > oldclicks) {
-    unsigned int now = micros();
-    unsigned int elapsed = now - oldmicros;
+    unsigned int m = micros();
+    unsigned int elapsed = m - oldmicros;
     oldclicks = clicks;
+    if (m > oldmicros + 60*1000*1000) {
+      minuteclicks = clicks - minuteclicks;
+    }
     
     tft.setCursor(0, 0);
-    tft.print("clk ");tft.println(clicks);
-    tft.print("gap ");tft.print(elapsed/1000000.0);
-    tft.println("  ");
+     tft.print("clk ");tft.print(clicks); tft.println("  ");
+     tft.print("gap ");tft.print(elapsed/1000000.0); tft.println("  ");
+     tft.print("cpm ");tft.print(minuteclicks); tft.println("  ");
     
-    oldmicros = now;
+    oldmicros = m;
   }
 }
