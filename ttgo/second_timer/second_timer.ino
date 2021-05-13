@@ -3,7 +3,7 @@
 TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
 volatile int timerCount;
 int nseconds;
- 
+
 hw_timer_t * timer;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
